@@ -23,7 +23,7 @@
                 <el-table-column prop="apm_date" label="预约时间" width="120"></el-table-column>
                 <el-table-column prop="apm_pre_address" label="家庭住址" width="120"></el-table-column>
                 <el-table-column prop="apm_det_address" label="详细地址" width="200"></el-table-column>
-                <el-table-column prop="apm_id_card_no" label="身份证号码" width="160"></el-table-column>
+                <el-table-column prop="apm_id_card_no" label="身份证号码" width="200"></el-table-column>
             </el-table>
             <div class="pagination">
                 <el-pagination @current-change="handleCurrentChange" layout="prev, pager, next" :total="total">
@@ -97,7 +97,7 @@
                 const self = this
                 this.$axios({
                   method: 'get',
-                  url: '/api/admin/order/heart/10?page=1',
+                  url: '/api/admin/order/apm/10?page=1',
                   headers: {
                     Authorization: `bearer ${localStorage.getItem('admin-token')}`
                   }

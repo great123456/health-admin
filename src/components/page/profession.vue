@@ -47,23 +47,13 @@
                     <el-input v-model="form.name"></el-input>
                 </el-form-item>
                 <el-form-item label="头像">
-                    <!-- <el-upload>
-                       class="avatar-uploader"
-                       action="http://healthapi.hxgtech.com/api/admin/upload/upload-image"
-                       :show-file-list="false"
-                       :on-success="handleAvatarSuccess">
-                       <img v-if="imageUrl" :src="imageUrl" class="avatar">
-                       <i v-else class="el-icon-plus avatar-uploader-icon"></i>
-                    </el-upload> -->
-                    <el-upload
-                      class="avatar-uploader"
-                      action="http://healthapi.hxgtech.com/api/admin/upload/upload-image"
-                      :headers="token"
-                      :show-file-list="false"
-                      :on-success="handleAvatarSuccess">
-                      <img v-if="imageUrl" :src="imageUrl" class="avatar">
-                      <i v-else class="el-icon-plus avatar-uploader-icon"></i>
-                   </el-upload>
+                  <!-- <div class="file-put">
+
+                  </div> -->
+                  <span>选择文件</span>
+                  <input type="file" id="file" @change="fileChange">
+                  <p class="file-name">{{fileName}}</p>
+                  <p @click="uploadImage" style="display: inline-block;color:#ffffff;background:#409EFF;width:100px;text-align: center;border-radius: 10px;cursor:pointer;height:35px !important;line-height:35px;">上传</p>
                 </el-form-item>
                 <el-form-item label="职位">
                     <el-input v-model="form.position"></el-input>
@@ -107,6 +97,7 @@
             return {
                 tableData: [],
                 cur_page: 1,
+                fileName:'',
                 schoolId:'',
                 addVisible: false,
                 delVisible: false,
@@ -140,9 +131,37 @@
                 this.cur_page = val;
                 this.getData();
             },
-            handleAvatarSuccess(res, file) {
-              this.imageUrl = URL.createObjectURL(file.raw);
-              console.log('imageurl',this.imageUrl);
+            fileChange(){                                           //选择文件
+              this.fileName = document.getElementById("file").files[0].name
+            },
+            uploadImage(){
+               const self = this
+               if(this.fileName == ''){
+                 self.$message.error('请先选择上传的图片文件')
+                 return
+               }
+               var files = document.getElementById("file").files[0]
+               var url = 'http://healthapi.hxgtech.com/api/admin/upload/upload-image'
+               var xhr = new XMLHttpRequest()
+               var formData = new FormData()
+               formData.append('file',files)
+               xhr.open('POST', url, true)
+               xhr.onreadystatechange = function(response){
+                  if(xhr.readyState==4){
+                    if(xhr.status==200){
+                       let res = JSON.parse(xhr.responseText)
+                      if(res.code == 0){
+                       self.$message.success('上传成功')
+                      }else{
+                       self.$message.error(res.msg)
+                      }
+                    }else{
+                     self.$message.error(`系统繁忙(code:${xhr.status})`)
+                    }
+                  }
+               }
+               xhr.setRequestHeader("Authorization", `bearer ${localStorage.getItem('admin-token')}`)
+               xhr.send(formData)
             },
             selectChange(){
               this.getData()
@@ -165,6 +184,7 @@
               })
             },
             addSchool(){
+              this.fileName = ''
               this.addVisible = true
             },
             // 保存编辑
@@ -247,30 +267,31 @@
         font-size: 16px;
         text-align: center
     }
-    .avatar-uploader .el-upload {
-    border: 1px dashed #d9d9d9;
-    border-radius: 6px;
-    cursor: pointer;
-    position: relative;
-    overflow: hidden;
-  }
-  .avatar-uploader .el-upload:hover {
-    border-color: #409EFF;
-  }
-  .el-upload .el-upload--text{
-    width:300px !important;
-  }
-  .avatar-uploader-icon {
-    font-size: 28px;
-    color: #8c939d;
-    width: 100px;
-    height: 100px;
-    line-height: 100px;
-    text-align: center;
-  }
-  .avatar {
-    width: 100px;
-    height: 100px;
-    display: block;
-  }
+    .file-put{
+            margin-top:10px;
+            margin-left: 20px;
+            position: relative;
+            width: 90px;
+            height: 26px;
+            border: 1px solid #99D3F5;
+            overflow: hidden;
+            color: #ffffff;
+            text-decoration: none;
+            text-indent: 0;
+            line-height: 26px;
+            background: #409EFF;
+            cursor: pointer;
+            text-align: center;
+            input{
+              position: absolute;
+              font-size: 16px;
+              right: 0;
+              top: 0;
+              opacity: 0;
+              cursor: pointer;
+            }
+          }
+          .file-name{
+            text-indent:20px;
+          }
 </style>
