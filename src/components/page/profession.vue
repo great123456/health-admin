@@ -103,7 +103,7 @@
                 delVisible: false,
                 form: {
                     name: '',
-                    atar: 'https://img11.360buyimg.com/mobilecms/s140x140_jfs/t5014/241/1408008171/233173/d593489c/58f083c4N922d05f5.jpg!q90.webp',
+                    atar: '',
                     position: '',
                     hospital: '',
                     department: '',
@@ -144,14 +144,17 @@
                var url = '/api/admin/upload/upload-image'
                var xhr = new XMLHttpRequest()
                var formData = new FormData()
-               formData.append('file',files)
+               formData.append('img',files)
                xhr.open('POST', url, true)
                xhr.onreadystatechange = function(response){
                   if(xhr.readyState==4){
                     if(xhr.status==200){
                        let res = JSON.parse(xhr.responseText)
-                      if(res.code == 0){
-                       self.$message.success('上传成功')
+                       console.log('res',res);
+                      if(res.code == 200){
+                       self.$message.success('上传头像成功')
+                       self.form.atar = res.data.url
+                       console.log('url',self.form.atar)
                       }else{
                        self.$message.error(res.msg)
                       }
@@ -178,7 +181,7 @@
               .then((res) => {
                   self.tableData = res.data.data.list
                   self.tableData.forEach(function(item){
-                    item.atar = 'https://img11.360buyimg.com'+item.atar
+                    item.atar = 'https://healthapi.hxgtech.com'+item.atar
                   })
                   console.log('res-zdi',self.tableData);
               })
