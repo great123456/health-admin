@@ -43,7 +43,7 @@
                     {
                         icon: 'el-icon-setting',
                         index: 'school',
-                        title: '学校管理'
+                        title: '病种分类'
                     },
                     {
                         icon: 'el-icon-bell',

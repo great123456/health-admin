@@ -1,6 +1,6 @@
 <template>
     <div class="login-wrap">
-        <div class="ms-title">后台管理系统</div>
+        <div class="ms-title">健康管理后台系统</div>
         <div class="ms-login">
             <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="0px" class="demo-ruleForm">
                 <el-form-item prop="username">
@@ -12,7 +12,6 @@
                 <div class="login-btn">
                     <el-button type="primary" @click="submitForm('ruleForm')">登录</el-button>
                 </div>
-                <p style="font-size:12px;line-height:30px;color:#999;">Tips : 用户名和密码随便填。</p>
             </el-form>
         </div>
     </div>
@@ -23,7 +22,7 @@
         data: function(){
             return {
                 ruleForm: {
-                    username: '2205822203@qq.com',
+                    username: '1301180334@qq.com',
                     password: '123123'
                 },
                 rules: {
@@ -41,9 +40,9 @@
                 const self = this
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
-                        if(self.ruleForm.username == '2205822203@qq.com' && self.ruleForm.password == '123123'){
+                        if(self.ruleForm.username == '1301180334@qq.com' && self.ruleForm.password == '123123'){
                           self.$axios.post('/api/admin/user/login', {
-                              email: '2205822203@qq.com',
+                              email: '1301180334@qq.com',
                               password: '123123'
                             })
                             .then(function (res) {

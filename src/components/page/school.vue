@@ -1,4 +1,4 @@
-<!-- 订单管理 -->
+<!-- 病种分类 -->
 <template>
     <div class="table">
         <div class="crumbs">
@@ -8,7 +8,7 @@
         </div>
         <div class="container">
             <div class="handle-box">
-              <el-button type="primary" plain @click="addSchool">添加学校</el-button>
+              <el-button type="primary" plain @click="addSchool">添加病种</el-button>
             </div>
             <el-table :data="tableData" border style="width: 100%" ref="multipleTable">
                 <el-table-column prop="name" label="学校名称"></el-table-column>
@@ -56,7 +56,6 @@
     export default {
         data() {
             return {
-                url: './static/vuetable.json',
                 tableData: [],
                 cur_page: 1,
                 addVisible: false,
@@ -84,7 +83,7 @@
                 const self = this
                 this.$axios({
                   method: 'get',
-                  url: '/api/admin/school/list/size/100',
+                  url: '/api/admin/specy/list/10?page=1',
                   headers: {
                     Authorization: `bearer ${localStorage.getItem('admin-token')}`
                   }
