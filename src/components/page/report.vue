@@ -36,13 +36,15 @@
         <!-- 编辑弹出框 -->
         <el-dialog title="添加报告" :visible.sync="addVisible" width="30%">
             <el-form ref="form" :model="form" label-width="100px">
-                <el-form-item label="病种名称">
-                    <el-input v-model="form.name"></el-input>
+                <el-form-item label="上传报告">
+                  <span>选择文件</span>
+                  <input type="file" id="file" @change="fileChange">
+                  <p @click="uploadImage" style="display: inline-block;color:#ffffff;background:#409EFF;width:100px;text-align: center;border-radius: 10px;cursor:pointer;height:35px !important;line-height:35px;">上传</p>
                 </el-form-item>
             </el-form>
             <span slot="footer" class="dialog-footer">
                 <el-button @click="addVisible = false">取 消</el-button>
-                <el-button type="primary" @click="saveEdit">确 定</el-button>
+                <el-button type="primary" @click="saveEdit">添加</el-button>
             </span>
         </el-dialog>
 
@@ -61,6 +63,7 @@
     export default {
         data() {
             return {
+                fileName: '',
                 tableData: [],
                 userId: '',
                 userList: [],
@@ -72,6 +75,7 @@
                     department: '',
                     desc: ''
                 },
+                reportUrl: '',
                 deleteId: ''
             }
         },
@@ -86,6 +90,40 @@
             handleCurrentChange(val) {
                 this.cur_page = val;
                 this.getData();
+            },
+            fileChange(){                                           //选择文件
+              this.fileName = document.getElementById("file").files[0].name
+            },
+            uploadImage(){
+               const self = this
+               if(this.fileName == ''){
+                 self.$message.error('请先选择上传的pdf文件')
+                 return
+               }
+               var files = document.getElementById("file").files[0]
+               var url = '/api/admin/upload/upload-pdf'
+               var xhr = new XMLHttpRequest()
+               var formData = new FormData()
+               formData.append('pdf',files)
+               xhr.open('POST', url, true)
+               xhr.onreadystatechange = function(response){
+                  if(xhr.readyState==4){
+                    if(xhr.status==200){
+                       let res = JSON.parse(xhr.responseText)
+                       console.log('res',res);
+                      if(res.code == 200){
+                       self.$message.success('上传报告成功')
+                       self.reportUrl = res.data.url
+                      }else{
+                       self.$message.error(res.msg)
+                      }
+                    }else{
+                     self.$message.error(`系统繁忙(code:${xhr.status})`)
+                    }
+                  }
+               }
+               xhr.setRequestHeader("Authorization", `bearer ${localStorage.getItem('admin-token')}`)
+               xhr.send(formData)
             },
             remoteMethod(query) {
               const self = this
@@ -120,6 +158,10 @@
                 })
             },
             addSchool(){
+              if(this.userId == ''){
+                this.$message('请先选择一个用户')
+                return
+              }
               this.addVisible = true
             },
             // 保存编辑
@@ -127,14 +169,13 @@
               const self = this
                 this.$axios({
                   method: 'post',
-                  url: '/api/admin/specy/store',
+                  url: '/api/admin/report/store',
                   headers: {
                     Authorization: `bearer ${localStorage.getItem('admin-token')}`
                   },
                   data: {
-                    department: self.form.department,
-                    name: self.form.name,
-                    content: self.form.desc
+                    path: self.reportUrl,
+                    auth_id: self.userId,
                   }
                 })
                 .then((res) => {
