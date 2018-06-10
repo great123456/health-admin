@@ -1,4 +1,4 @@
-<!-- 住院订单 -->
+<!-- 心电图订单 -->
 <template>
     <div class="table">
         <div class="crumbs">
@@ -17,11 +17,11 @@
             </div> -->
             <el-table :data="tableData" border style="width: 100%" ref="multipleTable">
                 <el-table-column prop="created_at" label="订单日期" sortable width="200"></el-table-column>
-                <el-table-column prop="apm_name" label="姓名" width="120"></el-table-column>
+                <el-table-column prop="order_no" label="订单编号" width="120"></el-table-column>
+                <el-table-column prop="total" label="总额" width="120"></el-table-column>
+                <el-table-column prop="apm_name" label="姓名" width="200"></el-table-column>
                 <el-table-column prop="apm_age" label="年龄" width="120"></el-table-column>
-                <el-table-column prop="apm_phone" label="手机号" width="200"></el-table-column>
-                <el-table-column prop="apm_date" label="预约时间" width="120"></el-table-column>
-                <el-table-column prop="apm_pre_address" label="家庭住址" width="120"></el-table-column>
+                <el-table-column prop="apm_phone" label="电话" width="120"></el-table-column>
                 <el-table-column prop="apm_det_address" label="详细地址" width="200"></el-table-column>
                 <el-table-column prop="apm_id_card_no" label="身份证号码" width="160"></el-table-column>
             </el-table>
@@ -97,7 +97,7 @@
                 const self = this
                 this.$axios({
                   method: 'get',
-                  url: '/api/admin/order/heart/10?page=1',
+                  url: '/api/admin/order/apm/10?page=1',
                   headers: {
                     Authorization: `bearer ${localStorage.getItem('admin-token')}`
                   }

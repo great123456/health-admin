@@ -8,7 +8,7 @@ export default new Router({
     routes: [
         {
             path: '/',
-            redirect: '/table'
+            redirect: '/login'
         },
         {
             path: '/',
@@ -23,7 +23,22 @@ export default new Router({
                 {
                     path: '/table',
                     component: resolve => require(['../components/page/BaseTable.vue'], resolve),
-                    meta: { title: '订单管理' }
+                    meta: { title: '住院订单' }
+                },
+                {
+                    path: '/order',
+                    component: resolve => require(['../components/page/order.vue'], resolve),
+                    meta: { title: '心电图订单' }
+                },
+                {
+                    path: '/report',
+                    component: resolve => require(['../components/page/report.vue'], resolve),
+                    meta: { title: '报告列表' }
+                },
+                {
+                    path: '/fee',
+                    component: resolve => require(['../components/page/fee.vue'], resolve),
+                    meta: { title: '费用列表' }
                 },
                 {
                     // banner上传
@@ -35,13 +50,13 @@ export default new Router({
                     // 学校管理
                     path: '/school',
                     component: resolve => require(['../components/page/school.vue'], resolve),
-                    meta: { title: '学校管理' }
+                    meta: { title: '病种分类' }
                 },
                 {
                     // 专业管理
                     path: '/profession',
                     component: resolve => require(['../components/page/profession.vue'], resolve),
-                    meta: { title: '专业管理' }
+                    meta: { title: '专家团队' }
                 }
             ]
         },

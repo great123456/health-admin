@@ -1,22 +1,34 @@
-<!-- 订单管理 -->
+<!-- 专家团队 -->
 <template>
     <div class="table">
         <div class="crumbs">
             <el-breadcrumb separator="/">
-                <el-breadcrumb-item><i class="el-icon-tickets"></i> 专业管理</el-breadcrumb-item>
+                <el-breadcrumb-item><i class="el-icon-tickets"></i> 专家团队</el-breadcrumb-item>
             </el-breadcrumb>
         </div>
         <div class="container">
             <div class="handle-box">
-              <el-select v-model="schoolId" placeholder="选择学校" class="handle-select mr10" @change='selectChange'>
-                    <el-option :key="item.id" :label="item.name" :value="item.id" v-for="item in schoolList"></el-option>
-                </el-select>
-              <el-button type="primary" plain @click="addSchool">添加专业</el-button>
+              <el-button type="primary" plain @click="addSchool">添加专家</el-button>
             </div>
             <el-table :data="tableData" border style="width: 100%" ref="multipleTable">
-               <el-table-column prop="created_at" label="创建日期"></el-table-column>
-                <el-table-column prop="major" label="专业名称"></el-table-column>
-                <el-table-column prop="tuition" label="学费"></el-table-column>
+                <el-table-column prop="created_at" label="创建日期"></el-table-column>
+                <el-table-column prop="name" label="专家姓名"></el-table-column>
+                <el-table-column label="头像">
+                  <template slot-scope="props">
+                    <img :src="props.row.atar" alt="" style="width:60px;height:60px;border-radius:100%;">
+                  </template>
+                </el-table-column>
+                <el-table-column prop="position" label="职级"></el-table-column>
+                <el-table-column prop="hospital" label="医院"></el-table-column>
+                <el-table-column prop="department" label="科室"></el-table-column>
+                <el-table-column prop="good_at" label="擅长"></el-table-column>
+                <el-table-column prop="introduction" label="简介"></el-table-column>
+                <el-table-column label="内容" type="expand">
+                  <template slot-scope="props">
+                    <span>内容:</span>
+                    <p>{{props.row.content}}</p>
+                  </template>
+                </el-table-column>
                  <el-table-column label="操作">
                    <template slot-scope="scope">
                       <el-button
@@ -29,13 +41,47 @@
         </div>
 
         <!-- 编辑弹出框 -->
-        <el-dialog title="添加专业" :visible.sync="addVisible" width="30%">
+        <el-dialog title="添加专家" :visible.sync="addVisible" width="500px">
             <el-form ref="form" :model="form" label-width="100px">
-                <el-form-item label="专业名称">
+                <el-form-item label="专家姓名">
                     <el-input v-model="form.name"></el-input>
                 </el-form-item>
-                <el-form-item label="学费">
-                    <el-input v-model="form.tuition"></el-input>
+                <el-form-item label="头像">
+                    <!-- <el-upload>
+                       class="avatar-uploader"
+                       action="http://healthapi.hxgtech.com/api/admin/upload/upload-image"
+                       :show-file-list="false"
+                       :on-success="handleAvatarSuccess">
+                       <img v-if="imageUrl" :src="imageUrl" class="avatar">
+                       <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+                    </el-upload> -->
+                    <el-upload
+                      class="avatar-uploader"
+                      action="http://healthapi.hxgtech.com/api/admin/upload/upload-image"
+                      :headers="token"
+                      :show-file-list="false"
+                      :on-success="handleAvatarSuccess">
+                      <img v-if="imageUrl" :src="imageUrl" class="avatar">
+                      <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+                   </el-upload>
+                </el-form-item>
+                <el-form-item label="职位">
+                    <el-input v-model="form.position"></el-input>
+                </el-form-item>
+                <el-form-item label="医院">
+                    <el-input v-model="form.hospital"></el-input>
+                </el-form-item>
+                <el-form-item label="科室">
+                    <el-input v-model="form.department"></el-input>
+                </el-form-item>
+                <el-form-item label="擅长">
+                    <el-input v-model="form.good_at"></el-input>
+                </el-form-item>
+                <el-form-item label="简介">
+                    <el-input v-model="form.introduction" type="textarea" :autosize="{ minRows:2, maxRows:5}"></el-input>
+                </el-form-item>
+                <el-form-item label="内容">
+                    <el-input v-model="form.content" type="textarea" :autosize="{ minRows:3, maxRows:20}"></el-input>
                 </el-form-item>
             </el-form>
             <span slot="footer" class="dialog-footer">
@@ -59,7 +105,6 @@
     export default {
         data() {
             return {
-                schoolList: [],
                 tableData: [],
                 cur_page: 1,
                 schoolId:'',
@@ -67,16 +112,27 @@
                 delVisible: false,
                 form: {
                     name: '',
-                    tuition: ''
+                    atar: 'https://img11.360buyimg.com/mobilecms/s140x140_jfs/t5014/241/1408008171/233173/d593489c/58f083c4N922d05f5.jpg!q90.webp',
+                    position: '',
+                    hospital: '',
+                    department: '',
+                    good_at: '',
+                    introduction: '',
+                    content: ''
                 },
+                imageUrl: '',
                 deleteId: ''
             }
         },
         created() {
-            this.getSchoolData();
+            this.getData();
         },
         computed: {
-
+           token(){
+             return {
+               Authorization: `bearer ${localStorage.getItem('admin-token')}`
+             }
+           }
         },
         methods: {
             // 分页导航
@@ -84,18 +140,9 @@
                 this.cur_page = val;
                 this.getData();
             },
-            getSchoolData() {
-              const self = this
-              this.$axios({
-                method: 'get',
-                url: '/api/admin/school/list/size/100',
-                headers: {
-                  Authorization: `bearer ${localStorage.getItem('admin-token')}`
-                }
-              })
-              .then((res) => {
-                  self.schoolList = res.data.data.data
-              })
+            handleAvatarSuccess(res, file) {
+              this.imageUrl = URL.createObjectURL(file.raw);
+              console.log('imageurl',this.imageUrl);
             },
             selectChange(){
               this.getData()
@@ -104,14 +151,17 @@
               const self = this
               this.$axios({
                 method: 'get',
-                url: `/api/admin/major/list/school/${self.schoolId}/size/100`,
+                url: `/api/admin/doctor/list/10?page=1`,
                 headers: {
                   Authorization: `bearer ${localStorage.getItem('admin-token')}`
                 }
               })
               .then((res) => {
-                  console.log('res',res);
-                  self.tableData = res.data.data.data
+                  self.tableData = res.data.data.list
+                  self.tableData.forEach(function(item){
+                    item.atar = 'https://img11.360buyimg.com'+item.atar
+                  })
+                  console.log('res-zdi',self.tableData);
               })
             },
             addSchool(){
@@ -122,14 +172,21 @@
               const self = this
               this.$axios({
                 method: 'post',
-                url: `/api/admin/major/store`,
+                url: `/api/admin/doctor/store`,
                 headers: {
                   Authorization: `bearer ${localStorage.getItem('admin-token')}`
                 },
                 data: {
-                  school_id: self.schoolId,
-                  major: self.form.name,
-                  tuition: self.form.tuition
+                  name: self.form.name,
+                  atar: self.form.atar,
+                  position: self.form.position,
+                  hospital: self.form.hospital,
+                  department: self.form.department,
+                  good_at: self.form.good_at,
+                  introduction: self.form.introduction,
+                  content: self.form.content,
+                  sort: 1,
+                  is_recommend: 1
                 }
               })
               .then((res) => {
@@ -152,7 +209,7 @@
               const self = this
               this.$axios({
                 method: 'delete',
-                url: `/api/admin/major/delete/${self.deleteId}`,
+                url: `/api/admin/doctor/delete/${self.deleteId}`,
                 headers: {
                   Authorization: `bearer ${localStorage.getItem('admin-token')}`
                 }
@@ -190,4 +247,30 @@
         font-size: 16px;
         text-align: center
     }
+    .avatar-uploader .el-upload {
+    border: 1px dashed #d9d9d9;
+    border-radius: 6px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+  .avatar-uploader .el-upload:hover {
+    border-color: #409EFF;
+  }
+  .el-upload .el-upload--text{
+    width:300px !important;
+  }
+  .avatar-uploader-icon {
+    font-size: 28px;
+    color: #8c939d;
+    width: 100px;
+    height: 100px;
+    line-height: 100px;
+    text-align: center;
+  }
+  .avatar {
+    width: 100px;
+    height: 100px;
+    display: block;
+  }
 </style>

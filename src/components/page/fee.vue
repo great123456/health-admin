@@ -1,43 +1,35 @@
-<!-- 病种分类 -->
+<!-- 费用列表 -->
 <template>
     <div class="table">
         <div class="crumbs">
             <el-breadcrumb separator="/">
-                <el-breadcrumb-item><i class="el-icon-tickets"></i>病种分类</el-breadcrumb-item>
+                <el-breadcrumb-item><i class="el-icon-tickets"></i>费用列表</el-breadcrumb-item>
             </el-breadcrumb>
         </div>
         <div class="container">
             <div class="handle-box">
-              <el-button type="primary" plain @click="addSchool">添加病种</el-button>
+              <!-- <el-button type="primary" plain @click="addSchool">添加病种</el-button> -->
             </div>
             <el-table :data="tableData" border style="width: 100%" ref="multipleTable">
                 <el-table-column prop="created_at" label="创建日期"></el-table-column>
-                <el-table-column prop="name" label="病种名称"></el-table-column>
-                <el-table-column prop="department" label="科室"></el-table-column>
-                <el-table-column prop="content" label="病种描述"></el-table-column>
+                <el-table-column prop="type" label="费用类型"></el-table-column>
+                <el-table-column prop="fee" label="费用"></el-table-column>
                  <el-table-column label="操作">
                    <template slot-scope="scope">
                       <el-button
                         size="mini"
-                        type="danger"
-                        @click="handleDelete(scope.row)">删除</el-button>
+                        @click="addSchool(scope.row)">修改</el-button>
                     </template>
                  </el-table-column>
             </el-table>
         </div>
 
         <!-- 编辑弹出框 -->
-        <el-dialog title="添加病种" :visible.sync="addVisible" width="30%">
+        <el-dialog title="修改费用" :visible.sync="addVisible" width="30%">
             <el-form ref="form" :model="form" label-width="100px">
-                <el-form-item label="病种名称">
-                    <el-input v-model="form.name"></el-input>
+                <el-form-item label="费用">
+                    <el-input v-model="form.fee"></el-input>
                 </el-form-item>
-                <el-form-item label="科室">
-                    <el-input v-model="form.department"></el-input>
-                </el-form-item>
-                <el-form-item label="简介">
-                  <el-input type="textarea" v-model="form.desc" :autosize="{ minRows:3, maxRows:20}"></el-input>
-               </el-form-item>
             </el-form>
             <span slot="footer" class="dialog-footer">
                 <el-button @click="addVisible = false">取 消</el-button>
@@ -65,10 +57,9 @@
                 addVisible: false,
                 delVisible: false,
                 form: {
-                    name: '',
-                    department: '',
-                    desc: ''
+                    fee: ''
                 },
+                updateId: '',
                 deleteId: ''
             }
         },
@@ -88,17 +79,23 @@
                 const self = this
                 this.$axios({
                   method: 'get',
-                  url: '/api/admin/specy/list/100?page=1',
+                  url: '/api/admin/fee/list',
                   headers: {
                     Authorization: `bearer ${localStorage.getItem('admin-token')}`
                   }
                 })
                 .then((res) => {
                     console.log('res',res.data)
-                    self.tableData = res.data.data.list
+                    self.tableData = res.data.data
+                    self.tableData.forEach(function(item){
+                       item.type = item.type == '1'?'住院费用':'心电图费用'
+                    })
                 })
             },
-            addSchool(){
+            addSchool(row){
+              console.log('fee',row);
+              this.updateId = row.id
+              this.form.fee = row.fee
               this.addVisible = true
             },
             // 保存编辑
@@ -106,23 +103,22 @@
               const self = this
                 this.$axios({
                   method: 'post',
-                  url: '/api/admin/specy/store',
+                  url: '/api/admin/fee/save',
                   headers: {
                     Authorization: `bearer ${localStorage.getItem('admin-token')}`
                   },
                   data: {
-                    department: self.form.department,
-                    name: self.form.name,
-                    content: self.form.desc
+                    fee: self.form.fee,
+                    id: self.updateId
                   }
                 })
                 .then((res) => {
                     if(res.data.code == 200){
-                      self.$message.success('添加成功')
+                      self.$message.success('修改成功')
                       self.addVisible = false
                       self.getData()
                     }else{
-                      self.$message.error('添加失败')
+                      self.$message.error('修改失败')
                     }
                 })
             },

@@ -33,7 +33,22 @@
                     {
                         icon: 'el-icon-menu',
                         index: 'table',
-                        title: '订单管理'
+                        title: '住院订单'
+                    },
+                    {
+                        icon: 'el-icon-menu',
+                        index: 'order',
+                        title: '心电图订单'
+                    },
+                    {
+                        icon: 'el-icon-menu',
+                        index: 'fee',
+                        title: '费用列表'
+                    },
+                    {
+                        icon: 'el-icon-menu',
+                        index: 'report',
+                        title: '报告列表'
                     },
                     {
                         icon: 'el-icon-upload',
@@ -48,7 +63,7 @@
                     {
                         icon: 'el-icon-bell',
                         index: 'profession',
-                        title: '专业管理'
+                        title: '专家团队'
                     }
                 ]
             }

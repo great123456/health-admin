@@ -51,7 +51,7 @@
                                 self.$message.success('登录成功')
                                 localStorage.setItem('admin-token',res.data.data.token)
                                 localStorage.setItem('ms_username',self.ruleForm.username);
-                                self.$router.push('/');
+                                self.$router.push('/table');
                               }else{
                                 self.$message.error('登录失败')
                               }
