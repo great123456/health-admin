@@ -52,7 +52,7 @@
                   </div> -->
                   <span>选择文件</span>
                   <input type="file" id="file" @change="fileChange">
-                  <p class="file-name">{{fileName}}</p>
+                  <!-- <p class="file-name">{{fileName}}</p> -->
                   <p @click="uploadImage" style="display: inline-block;color:#ffffff;background:#409EFF;width:100px;text-align: center;border-radius: 10px;cursor:pointer;height:35px !important;line-height:35px;">上传</p>
                 </el-form-item>
                 <el-form-item label="职位">
@@ -141,7 +141,7 @@
                  return
                }
                var files = document.getElementById("file").files[0]
-               var url = 'http://healthapi.hxgtech.com/api/admin/upload/upload-image'
+               var url = '/api/admin/upload/upload-image'
                var xhr = new XMLHttpRequest()
                var formData = new FormData()
                formData.append('file',files)

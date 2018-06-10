@@ -8,7 +8,21 @@
         </div>
         <div class="container">
             <div class="handle-box">
-              <!-- <el-button type="primary" plain @click="addSchool">添加病种</el-button> -->
+              <el-select
+                v-model="userId"
+                filterable
+                remote
+                reserve-keyword
+                placeholder="请输入用户名"
+                :remote-method="remoteMethod">
+                <el-option
+                  v-for="item in userList"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id">
+                </el-option>
+              </el-select>
+              <el-button type="primary" plain @click="addSchool">添加报告</el-button>
             </div>
             <el-table :data="tableData" border style="width: 100%" ref="multipleTable">
                 <el-table-column prop="created_at" label="创建日期"></el-table-column>
@@ -48,6 +62,8 @@
         data() {
             return {
                 tableData: [],
+                userId: '',
+                userList: [],
                 cur_page: 1,
                 addVisible: false,
                 delVisible: false,
@@ -70,6 +86,24 @@
             handleCurrentChange(val) {
                 this.cur_page = val;
                 this.getData();
+            },
+            remoteMethod(query) {
+              const self = this
+              if (query !== '') {
+                this.$axios({
+                  method: 'get',
+                  url: `/api/admin/report/patient/${query}/100`,
+                  headers: {
+                    Authorization: `bearer ${localStorage.getItem('admin-token')}`
+                  }
+                })
+                .then((res) => {
+                    console.log('res',res.data)
+                    self.userList = res.data.data.list
+                })
+              }else{
+                this.userList = []
+              }
             },
             getData() {
                 const self = this
