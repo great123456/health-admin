@@ -28,18 +28,21 @@
                 <el-table-column prop="created_at" label="创建日期"></el-table-column>
                 <el-table-column prop="auth.name" label="姓名"></el-table-column>
                 <el-table-column prop="auth.phone" label="电话"></el-table-column>
-                <el-table-column prop="auth.address" label="地址"></el-table-column>
+                <el-table-column prop="auth.name" label="报告名称"></el-table-column>
                 <el-table-column prop="auth.id_card_no" label="身份证号码"></el-table-column>
             </el-table>
         </div>
 
         <!-- 编辑弹出框 -->
-        <el-dialog title="添加报告" :visible.sync="addVisible" width="30%">
+        <el-dialog title="添加报告" :visible.sync="addVisible" width="30%" v-loading="loading" element-loading-text="文件上传中">
             <el-form ref="form" :model="form" label-width="100px">
                 <el-form-item label="上传报告">
                   <span>选择文件</span>
                   <input type="file" id="file" @change="fileChange">
                   <p @click="uploadImage" style="display: inline-block;color:#ffffff;background:#409EFF;width:100px;text-align: center;border-radius: 10px;cursor:pointer;height:35px !important;line-height:35px;">上传</p>
+                </el-form-item>
+                <el-form-item label="报告名称">
+                    <el-input v-model="reportName"></el-input>
                 </el-form-item>
             </el-form>
             <span slot="footer" class="dialog-footer">
@@ -67,6 +70,8 @@
                 tableData: [],
                 userId: '',
                 userList: [],
+                loading: false,
+                reportName:'',
                 cur_page: 1,
                 addVisible: false,
                 delVisible: false,
@@ -100,6 +105,7 @@
                  self.$message.error('请先选择上传的pdf文件')
                  return
                }
+               this.loading = true
                var files = document.getElementById("file").files[0]
                var url = '/api/admin/upload/upload-pdf'
                var xhr = new XMLHttpRequest()
@@ -108,12 +114,13 @@
                xhr.open('POST', url, true)
                xhr.onreadystatechange = function(response){
                   if(xhr.readyState==4){
+                    self.loading = false
                     if(xhr.status==200){
                        let res = JSON.parse(xhr.responseText)
                        console.log('res',res);
                       if(res.code == 200){
                        self.$message.success('上传报告成功')
-                       self.reportUrl = res.data.url
+                       self.reportUrl = res.data.path
                       }else{
                        self.$message.error(res.msg)
                       }
@@ -176,6 +183,7 @@
                   data: {
                     path: self.reportUrl,
                     auth_id: self.userId,
+                    name: self.reportName
                   }
                 })
                 .then((res) => {
