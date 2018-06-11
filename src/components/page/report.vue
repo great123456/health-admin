@@ -154,7 +154,7 @@
                 const self = this
                 this.$axios({
                   method: 'get',
-                  url: '/api/admin/report/list/10?page=1',
+                  url: '/api/admin/report/list/100?page=1',
                   headers: {
                     Authorization: `bearer ${localStorage.getItem('admin-token')}`
                   }

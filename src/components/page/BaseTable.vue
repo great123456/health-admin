@@ -26,7 +26,7 @@
                 <el-table-column prop="apm_id_card_no" label="身份证号码" width="200"></el-table-column>
             </el-table>
             <div class="pagination">
-                <el-pagination @current-change="handleCurrentChange" layout="prev, pager, next" :total="total">
+                <el-pagination @current-change="handleCurrentChange" :page-size="10" layout="prev, pager, next" :total="total">
                 </el-pagination>
             </div>
         </div>
@@ -98,7 +98,7 @@
                 const self = this
                 this.$axios({
                   method: 'get',
-                  url: '/api/admin/order/apm/10?page=1',
+                  url: '/api/admin/order/apm/10?page='+self.cur_page,
                   headers: {
                     Authorization: `bearer ${localStorage.getItem('admin-token')}`
                   }
@@ -107,6 +107,7 @@
                     console.log('res',res.data)
                     self.tableData = res.data.data.list
                     self.total = res.data.data.total
+                    console.log('total',self.total);
                 })
             },
             search() {
