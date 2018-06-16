@@ -22,11 +22,10 @@
                 <el-table-column prop="hospital" label="医院"></el-table-column>
                 <el-table-column prop="department" label="科室"></el-table-column>
                 <el-table-column prop="good_at" label="擅长"></el-table-column>
-                <el-table-column prop="introduction" label="简介"></el-table-column>
-                <el-table-column label="内容" type="expand">
+                <el-table-column label="简介" type="expand">
                   <template slot-scope="props">
-                    <span>内容:</span>
-                    <p>{{props.row.content}}</p>
+                    <span>简介:</span>
+                    <p>{{props.row.introduction}}</p>
                   </template>
                 </el-table-column>
                  <el-table-column label="操作">
@@ -70,9 +69,9 @@
                 <el-form-item label="简介">
                     <el-input v-model="form.introduction" type="textarea" :autosize="{ minRows:2, maxRows:5}"></el-input>
                 </el-form-item>
-                <el-form-item label="内容">
+                <!-- <el-form-item label="内容">
                     <el-input v-model="form.content" type="textarea" :autosize="{ minRows:3, maxRows:20}"></el-input>
-                </el-form-item>
+                </el-form-item> -->
             </el-form>
             <span slot="footer" class="dialog-footer">
                 <el-button @click="addVisible = false">取 消</el-button>
@@ -109,7 +108,7 @@
                     department: '',
                     good_at: '',
                     introduction: '',
-                    content: ''
+                    content: '123'
                 },
                 imageUrl: '',
                 deleteId: ''
