@@ -62,15 +62,18 @@ export default new Router({
         },
         {
             path: '/login',
-            component: resolve => require(['../components/page/Login.vue'], resolve)
+            component: resolve => require(['../components/page/Login.vue'], resolve),
+            meta: {title:'健康管理后台系统'}
         },
         {
             path: '/404',
-            component: resolve => require(['../components/page/404.vue'], resolve)
+            component: resolve => require(['../components/page/404.vue'], resolve),
+            meta: {title:'404'}
         },
         {
             path: '/403',
-            component: resolve => require(['../components/page/403.vue'], resolve)
+            component: resolve => require(['../components/page/403.vue'], resolve),
+            meta: {title:'403'}
         },
         {
             path: '*',
